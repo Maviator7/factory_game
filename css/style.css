@@ -1,0 +1,228 @@
+/* 基本スタイル */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    overflow: hidden;
+}
+
+/* レイアウト */
+#container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+#canvas {
+    background: linear-gradient(45deg, #34495e 0%, #2c3e50 50%, #34495e 100%);
+    border: 2px solid #333;
+    cursor: crosshair;
+    display: block;
+    touch-action: none;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: #2c3e50;
+    padding: 15px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    #container {
+        flex-direction: column;
+    }
+    
+    #sidebar {
+        width: 100%;
+        min-width: unset;
+        height: 200px;
+        min-height: 200px;
+        max-height: 250px;
+        padding: 10px;
+    }
+    
+    .section {
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+    
+    .btn {
+        padding: 8px;
+        margin: 3px 0;
+        font-size: 12px;
+    }
+    
+    .stats {
+        flex-wrap: wrap;
+    }
+    
+    .stat {
+        min-width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    #sidebar {
+        height: 180px;
+        padding: 8px;
+    }
+    
+    .section h3 {
+        font-size: 14px;
+        margin: 0 0 5px 0;
+    }
+    
+    .btn {
+        padding: 6px;
+        font-size: 11px;
+    }
+}
+
+/* セクション */
+.section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+.section h3 {
+    margin: 0 0 10px 0;
+    color: #3498db;
+}
+
+/* ボタン */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background: #2980b9;
+}
+
+.btn.active {
+    background: #e74c3c;
+}
+
+.control-btn {
+    background: #27ae60;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.control-btn:hover {
+    background: #229954;
+}
+
+.levelup-btn {
+    background: #f39c12;
+}
+
+.levelup-btn:hover {
+    background: #e67e22;
+}
+
+/* 統計表示 */
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #bdc3c7;
+}
+
+/* モード表示 */
+.mode-indicator {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.mode-place {
+    background: #3498db;
+}
+
+.mode-delete {
+    background: #e74c3c;
+}
+
+.mode-levelup {
+    background: #f39c12;
+}
+
+/* 在庫表示 */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.inventory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.inventory-item span:first-child {
+    font-size: 14px;
+}
+
+.inventory-item span:last-child {
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+/* 生産統計 */
+.production-stats {
+    font-size: 12px;
+}
+
+.production-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+    color: #ecf0f1;
+}
+
+/* 警告表示 */
+.warning {
+    color: #e74c3c;
+    font-weight: bold;
+}

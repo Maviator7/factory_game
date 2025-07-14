@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動車工場シミュレーション - レベルアップ機能付き</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        
+        <div id="sidebar">
+            <div class="section">
+                <h3>🎮 制御</h3>
+                <button class="btn control-btn" id="startBtn">🚀 生産開始</button>
+                <button class="btn" id="clearBtn">🧹 全クリア</button>
+            </div>
+            
+            <div class="section">
+                <h3>📊 統計</h3>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="cars">0</div>
+                        <div class="stat-label">完成車</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="revenue">¥0</div>
+                        <div class="stat-label">売上</div>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="efficiency">0%</div>
+                        <div class="stat-label">効率</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="items">0</div>
+                        <div class="stat-label">処理中</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>📦 リソース</h3>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="materials">100</div>
+                        <div class="stat-label">原材料</div>
+                    </div>
+                    <div class="stat">
+                        <button class="btn" id="buyMaterialsBtn" style="font-size: 12px; padding: 5px;">+100 (¥50k)</button>
+                        <div class="stat-label">材料購入</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>📦 部品在庫</h3>
+                <div class="inventory-grid">
+                    <div class="inventory-item">
+                        <span>🛞</span>
+                        <span id="inventoryTire">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🔧</span>
+                        <span id="inventoryEngine">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🚗</span>
+                        <span id="inventoryBody">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🪑</span>
+                        <span id="inventorySeat">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>⚙️</span>
+                        <span id="inventoryPreAssembled">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🚙</span>
+                        <span id="inventoryAssembled">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>🔧 基本機械</h3>
+                <button class="btn" data-machine="supplier">📦 原材料供給</button>
+                <button class="btn" data-machine="conveyor">🟰 コンベア</button>
+                <button class="btn" data-machine="storage_box">📦 部品格納ボックス</button>
+            </div>
+            
+            <div class="section">
+                <h3>⚙️ 基本加工</h3>
+                <button class="btn" data-machine="press">🔨 プレス機</button>
+                <button class="btn" data-machine="welder">⚡ 溶接機</button>
+                <button class="btn" data-machine="painter">🎨 塗装機</button>
+            </div>
+            
+            <div class="section">
+                <h3>🔩 パーツ加工</h3>
+                <button class="btn" data-machine="tire_press">🛞 タイヤプレス</button>
+                <button class="btn" data-machine="engine_press">🔧 エンジンプレス</button>
+                <button class="btn" data-machine="body_press">🚗 ボディプレス</button>
+            </div>
+            
+            <div class="section">
+                <h3>🚗 パーツ完成</h3>
+                <button class="btn" data-machine="tire_maker">🛞 タイヤ製造</button>
+                <button class="btn" data-machine="engine_maker">🔧 エンジン製造</button>
+                <button class="btn" data-machine="body_maker">🚗 ボディ製造</button>
+                <button class="btn" data-machine="seat_maker">🪑 シート製造</button>
+            </div>
+            
+            <div class="section">
+                <h3>🏭 組立・検査</h3>
+                <button class="btn" data-machine="parts_assembler">🔩 部品組立</button>
+                <button class="btn" data-machine="final_assembler">🏭 最終組立</button>
+                <button class="btn" data-machine="inspector">🔍 検査機</button>
+            </div>
+            
+            <div class="section">
+                <h3>⭐ アップグレード</h3>
+                <button class="btn levelup-btn" id="levelupBtn">⭐ レベルアップ</button>
+                <div style="font-size: 11px; color: #bdc3c7; margin-top: 5px;">
+                    レベルアップモード→機械クリックでアップグレード
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>🗑️ 削除</h3>
+                <button class="btn" id="deleteBtn">🗑️ 削除モード</button>
+            </div>
+            
+            <div class="section">
+                <h3>ℹ️ 機械操作</h3>
+                <div style="font-size: 11px; line-height: 1.3;">
+                    <p><strong>配置:</strong> 機械選択→左クリック</p>
+                    <p><strong>回転:</strong> 機械を右クリック</p>
+                    <p><strong>削除:</strong> 削除モード→左クリック</p>
+                    <p><strong>レベルアップ:</strong> ⭐モード→左クリック (¥100k)</p>
+                    <p><span style="color: #3498db;">🔵</span> <strong>入力ポート</strong> - 材料が入る</p>
+                    <p><span style="color: #e74c3c;">🔴→</span> <strong>出力ポート</strong> - 製品が出る</p>
+                    <p><strong>自動接続:</strong> ポート同士が隣接すると接続</p>
+                    <p><strong>Lv.2効果:</strong> 処理速度が50%向上</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>📋 部品レシピ</h3>
+                <div style="font-size: 10px; line-height: 1.2;">
+                    <div style="margin-bottom: 8px;">
+                        <strong>🛞 タイヤ:</strong><br>
+                        原材料 → タイヤプレス → 溶接 → タイヤ製造
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>🔧 エンジン:</strong><br>
+                        原材料 → エンジンプレス → 溶接 → エンジン製造
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>🚗 ボディ:</strong><br>
+                        原材料 → ボディプレス → 溶接 → ボディ製造
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>🪑 シート:</strong><br>
+                        原材料 → プレス → 溶接 → 塗装 → シート製造
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>🚙 完成車:</strong><br>
+                        タイヤ×4 + エンジン×1 + ボディ×1 + シート×4<br>
+                        → 部品組立 → 最終組立 → 検査
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript ファイル読み込み -->
+    <script src="js/machine.js"></script>
+    <script src="js/item.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
