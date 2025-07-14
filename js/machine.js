@@ -25,6 +25,24 @@ function rotatePort(port, rotation) {
   return rotations[rotation]
 }
 
+// 車種定義
+const carTypes = {
+  standard: {
+    name: '標準車',
+    emoji: '🚗',
+    price: 250000,
+    requiredParts: { tire: 4, engine: 1, body: 1, seat: 4 },
+    color: '#3498db'
+  },
+  luxury: {
+    name: '高級車',
+    emoji: '🏆',
+    price: 800000,
+    requiredParts: { tire: 4, luxury_engine: 1, luxury_body: 1, leather_seat: 4, premium_interior: 1 },
+    color: '#f1c40f'
+  }
+}
+
 // 機械定義（レシピ情報付き）
 const machineTypes = {
   supplier: { 
@@ -166,7 +184,7 @@ const machineTypes = {
     emoji: '📦',
     color: '#7f8c8d',
     processTime: 0,
-    inputs: ['tire', 'engine', 'body', 'seat', 'pre_assembled', 'assembled'],
+    inputs: ['tire', 'engine', 'body', 'seat', 'pre_assembled', 'assembled', 'leather', 'luxury_engine', 'luxury_body', 'leather_seat', 'premium_interior', 'luxury_assembled'],
     outputs: [],
     inputPorts: [{dx: -1, dy: 0}, {dx: 1, dy: 0}, {dx: 0, dy: -1}, {dx: 0, dy: 1}], // 四方向から入力
     outputPorts: [], // 出力なし（格納専用）
@@ -202,11 +220,88 @@ const machineTypes = {
     emoji: '🔍', 
     color: '#2ecc71',
     processTime: 1000,
-    inputs: ['assembled'],
+    inputs: ['assembled', 'luxury_assembled'],
     outputs: ['finished'],
     inputPorts: [{dx: -1, dy: 0}], // 左から入力
     outputPorts: [], // 出力なし（終端）
-    recipe: '組立済み車 → 完成車（売上: ¥250,000）'
+    recipe: '組立済み車 → 完成車（標準車: ¥250,000 / 高級車: ¥800,000）'
+  },
+  // 高級車専用機械
+  luxury_engine_maker: {
+    name: '高級エンジン製造',
+    emoji: '💎',
+    color: '#e74c3c',
+    processTime: 3000,
+    inputs: ['welded'],
+    outputs: ['luxury_engine'],
+    requiresAll: false, // 単一入力だが複数個必要
+    requiredCounts: { welded: 2 }, // 溶接済み材料を2個消費
+    inputPorts: [{dx: -1, dy: 0}, {dx: 0, dy: -1}], // 左、上から入力
+    outputPorts: [{dx: 1, dy: 0}], // 右に出力
+    recipe: '(原材料 → プレス → 溶接)×2 → 高級エンジン（高性能・高価格）'
+  },
+  luxury_body_maker: {
+    name: '高級ボディ製造',
+    emoji: '✨',
+    color: '#1abc9c',
+    processTime: 2500,
+    inputs: ['welded'],
+    outputs: ['luxury_body'],
+    requiresAll: false, // 単一入力だが複数個必要
+    requiredCounts: { welded: 2 }, // 溶接済み材料を2個消費
+    inputPorts: [{dx: -1, dy: 0}, {dx: 0, dy: -1}], // 左、上から入力
+    outputPorts: [{dx: 1, dy: 0}], // 右に出力
+    recipe: '(原材料 → プレス → 溶接)×2 → 高級ボディ（プレミアム仕上げ）'
+  },
+  leather_processor: {
+    name: '革加工機',
+    emoji: '🐄',
+    color: '#8b4513',
+    processTime: 2000,
+    inputs: ['material'],
+    outputs: ['leather'],
+    inputPorts: [{dx: -1, dy: 0}], // 左から入力
+    outputPorts: [{dx: 1, dy: 0}], // 右に出力
+    recipe: '原材料 → 革材料（高級内装用）'
+  },
+  leather_seat_maker: {
+    name: 'レザーシート製造',
+    emoji: '🪑',
+    color: '#8e44ad',
+    processTime: 2500,
+    inputs: ['leather', 'painted'],
+    outputs: ['leather_seat'],
+    requiresAll: true,
+    requiredCounts: { leather: 1, painted: 1 },
+    inputPorts: [{dx: -1, dy: 0}, {dx: 0, dy: -1}], // 左、上から入力
+    outputPorts: [{dx: 1, dy: 0}], // 右に出力
+    recipe: '革×1 + (原材料 → プレス → 溶接 → 塗装)×1 → レザーシート'
+  },
+  premium_interior_maker: {
+    name: 'プレミアム内装製造',
+    emoji: '🎭',
+    color: '#9b59b6',
+    processTime: 3500,
+    inputs: ['leather', 'painted'],
+    outputs: ['premium_interior'],
+    requiresAll: true,
+    requiredCounts: { leather: 2, painted: 1 },
+    inputPorts: [{dx: -1, dy: 0}, {dx: 0, dy: -1}], // 左、上から入力
+    outputPorts: [{dx: 1, dy: 0}], // 右に出力
+    recipe: '革×2 + (原材料 → プレス → 溶接 → 塗装)×1 → プレミアム内装'
+  },
+  luxury_assembler: {
+    name: '高級車組立',
+    emoji: '👑',
+    color: '#f1c40f',
+    processTime: 5000,
+    inputs: ['tire', 'luxury_engine', 'luxury_body', 'leather_seat', 'premium_interior'],
+    outputs: ['luxury_assembled'],
+    requiresAll: true,
+    requiredCounts: { tire: 4, luxury_engine: 1, luxury_body: 1, leather_seat: 4, premium_interior: 1 },
+    inputPorts: [{dx: -1, dy: 0}, {dx: 0, dy: -1}, {dx: 1, dy: 0}], // 左、上、右から入力
+    outputPorts: [{dx: 0, dy: 1}], // 下に出力
+    recipe: 'タイヤ×4 + 高級エンジン×1 + 高級ボディ×1 + レザーシート×4 + プレミアム内装×1 → 高級車組立品'
   }
 }
 
@@ -358,7 +453,7 @@ function canAcceptItem(machine, itemType) {
 
 // 複数入力機械の処理可能判定（在庫システム対応）
 function canProcessMultipleInputs(machine, machineType) {
-  if (!machineType.requiresAll || !machineType.inputs) {return false}
+  if (!machineType.inputs) {return false}
     
   // 在庫から取得する機械の場合
   if (machineType.useInventory && machineType.requiredCounts) {
@@ -367,7 +462,7 @@ function canProcessMultipleInputs(machine, machineType) {
     })
   }
     
-  // 必要個数が設定されている場合
+  // 必要個数が設定されている場合（requiresAll=falseでも対応）
   if (machineType.requiredCounts) {
     return Object.entries(machineType.requiredCounts).every(([partType, requiredCount]) => {
       const availableCount = machine.inventory.filter(item => item.type === partType).length
@@ -375,10 +470,14 @@ function canProcessMultipleInputs(machine, machineType) {
     })
   }
     
-  // 従来の1個ずつシステム
-  return machineType.inputs.every(inputType => {
-    return machine.inventory.some(item => item.type === inputType)
-  })
+  // requiresAll=trueの従来システム
+  if (machineType.requiresAll) {
+    return machineType.inputs.every(inputType => {
+      return machine.inventory.some(item => item.type === inputType)
+    })
+  }
+    
+  return false
 }
 
 // 機械処理
@@ -411,12 +510,13 @@ function processMachines(now) {
         
     // その他の機械の処理
     if (machine.type !== 'supplier' && machine.type !== 'conveyor') {
-      // 複数入力が必要な機械の処理
-      if (machineType.requiresAll) {
+      // 複数入力が必要な機械の処理（requiresAll=trueまたはrequiredCountsがある場合）
+      if (machineType.requiresAll || machineType.requiredCounts) {
         if (!machine.processing && canProcessMultipleInputs(machine, machineType)) {
           machine.processing = true
           machine.processStart = now
-          if (machineType.requiresAll && machineType.requiredCounts) {
+                    
+          if (machineType.requiredCounts) {
             // 在庫システムを使用する場合
             if (machineType.useInventory) {
               Object.entries(machineType.requiredCounts).forEach(([partType, requiredCount]) => {
@@ -458,7 +558,7 @@ function processMachines(now) {
       if (machine.processing && now - machine.processStart > processTime) {
         machine.processing = false
                 
-        if (!machineType.requiresAll) {
+        if (!machineType.requiresAll && !machineType.requiredCounts) {
           machine.inventory.shift() // 単一入力の場合のみ
         }
         // 複数入力の場合は処理開始時に既に消費済み
@@ -473,8 +573,17 @@ function processMachines(now) {
                     
           // 検査機の場合は完成車として処理
           if (machine.type === 'inspector') {
-            stats.cars++
-            stats.revenue += 250000 // 高価値の完成車
+            // 車種を判別して適切な売上を計算
+            const inputType = machine.inventory[0]?.type
+            if (inputType === 'luxury_assembled') {
+              stats.cars++
+              stats.revenue += 800000 // 高級車
+              stats.totalProduced.luxury_cars = (stats.totalProduced.luxury_cars || 0) + 1
+            } else {
+              stats.cars++
+              stats.revenue += 250000 // 標準車
+              stats.totalProduced.standard_cars = (stats.totalProduced.standard_cars || 0) + 1
+            }
           } else {
             // 接続先に送る
             if (connections.has(key)) {

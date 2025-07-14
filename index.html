@@ -39,6 +39,16 @@
                         <div class="stat-label">処理中</div>
                     </div>
                 </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="standardCars">0</div>
+                        <div class="stat-label">🚙 標準車</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="luxuryCars">0</div>
+                        <div class="stat-label">🏆 高級車</div>
+                    </div>
+                </div>
             </div>
             
             <div class="section">
@@ -84,6 +94,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="section">
+                <h3>👑 高級車部品在庫</h3>
+                <div class="inventory-grid">
+                    <div class="inventory-item">
+                        <span>🐄</span>
+                        <span id="inventoryLeather">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>💎</span>
+                        <span id="inventoryLuxuryEngine">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>✨</span>
+                        <span id="inventoryLuxuryBody">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>👑</span>
+                        <span id="inventoryLeatherSeat">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🎭</span>
+                        <span id="inventoryPremiumInterior">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <span>🏆</span>
+                        <span id="inventoryLuxuryAssembled">0</span>
+                    </div>
+                </div>
+            </div>
             
             <div class="section">
                 <h3>🔧 基本機械</h3>
@@ -119,6 +159,16 @@
                 <button class="btn" data-machine="parts_assembler">🔩 部品組立</button>
                 <button class="btn" data-machine="final_assembler">🏭 最終組立</button>
                 <button class="btn" data-machine="inspector">🔍 検査機</button>
+            </div>
+
+            <div class="section">
+                <h3>👑 高級車製造</h3>
+                <button class="btn" data-machine="leather_processor">🐄 革加工機</button>
+                <button class="btn" data-machine="luxury_engine_maker">💎 高級エンジン製造</button>
+                <button class="btn" data-machine="luxury_body_maker">✨ 高級ボディ製造</button>
+                <button class="btn" data-machine="leather_seat_maker">👑 レザーシート製造</button>
+                <button class="btn" data-machine="premium_interior_maker">🎭 プレミアム内装製造</button>
+                <button class="btn" data-machine="luxury_assembler">🏆 高級車組立</button>
             </div>
             
             <div class="section">
@@ -168,9 +218,18 @@
                         原材料 → プレス → 溶接 → 塗装 → シート製造
                     </div>
                     <div style="margin-bottom: 8px;">
-                        <strong>🚙 完成車:</strong><br>
+                        <strong>🚙 標準車:</strong><br>
                         タイヤ×4 + エンジン×1 + ボディ×1 + シート×4<br>
-                        → 部品組立 → 最終組立 → 検査
+                        → 部品組立 → 最終組立 → 検査 (¥250k)
+                    </div>
+                    <div style="margin-bottom: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                        <strong>🏆 高級車 (¥800k):</strong><br>
+                        <span style="color: #f1c40f;">💎 高級エンジン:</span> (原材料 → プレス → 溶接)×2 → 高級エンジン製造<br>
+                        <span style="color: #f1c40f;">✨ 高級ボディ:</span> (原材料 → プレス → 溶接)×2 → 高級ボディ製造<br>
+                        <span style="color: #f1c40f;">🐄 革材料:</span> 原材料 → 革加工機<br>
+                        <span style="color: #f1c40f;">👑 レザーシート:</span> 革×1 + (原材料 → プレス → 溶接 → 塗装)×1 → レザーシート製造<br>
+                        <span style="color: #f1c40f;">🎭 プレミアム内装:</span> 革×2 + (原材料 → プレス → 溶接 → 塗装)×1 → プレミアム内装製造<br>
+                        <span style="color: #f1c40f;">🏆 最終組立:</span> タイヤ×4 + 高級エンジン×1 + 高級ボディ×1 + レザーシート×4 + プレミアム内装×1
                     </div>
                 </div>
             </div>

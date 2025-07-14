@@ -1,5 +1,7 @@
 // アイテム処理
 
+const ITEM_SPEED = 2
+
 // アイテムの色定義
 const itemColors = {
   material: '#8e44ad',
@@ -16,9 +18,16 @@ const itemColors = {
   engine: '#e74c3c',
   body: '#1abc9c',
   seat: '#8e44ad',
+  // 高級車パーツ
+  leather: '#8b4513',
+  luxury_engine: '#e74c3c',
+  luxury_body: '#1abc9c',
+  leather_seat: '#8e44ad',
+  premium_interior: '#9b59b6',
   // 組立品
   pre_assembled: '#3498db',
   assembled: '#27ae60',
+  luxury_assembled: '#f1c40f',
   finished: '#2ecc71'
 }
 
@@ -38,9 +47,16 @@ const itemEmojis = {
   engine: '🔧',
   body: '🚗',
   seat: '🪑',
+  // 高級車パーツ
+  leather: '🐄',
+  luxury_engine: '💎',
+  luxury_body: '✨',
+  leather_seat: '👑',
+  premium_interior: '🎭',
   // 組立品
   pre_assembled: '⚙️',
   assembled: '🚙',
+  luxury_assembled: '🏆',
   finished: '✨'
 }
 
@@ -107,7 +123,8 @@ function moveItems(deltaTime) {
           }
         } else if (targetMachine.type === 'storage_box') {
           // 格納ボックスは在庫に追加
-          if (['tire', 'engine', 'body', 'seat', 'pre_assembled', 'assembled'].includes(item.type)) {
+          const storableItems = ['tire', 'engine', 'body', 'seat', 'pre_assembled', 'assembled', 'leather', 'luxury_engine', 'luxury_body', 'leather_seat', 'premium_interior', 'luxury_assembled']
+          if (storableItems.includes(item.type)) {
             stats.inventory[item.type]++
           }
         } else {

@@ -221,7 +221,9 @@ function clearAll() {
       tire: 0,
       engine: 0,
       body: 0,
-      seat: 0
+      seat: 0,
+      standard_cars: 0,
+      luxury_cars: 0
     },
     inventory: {
       tire: 0,
@@ -229,7 +231,14 @@ function clearAll() {
       body: 0,
       seat: 0,
       pre_assembled: 0,
-      assembled: 0
+      assembled: 0,
+      // 高級車パーツ
+      leather: 0,
+      luxury_engine: 0,
+      luxury_body: 0,
+      leather_seat: 0,
+      premium_interior: 0,
+      luxury_assembled: 0
     }
   }
   updateStats()
@@ -278,6 +287,10 @@ function updateStats() {
   document.getElementById('efficiency').textContent = `${stats.efficiency}%`
   document.getElementById('items').textContent = stats.itemsProcessing
     
+  // 車種別統計更新
+  document.getElementById('standardCars').textContent = stats.totalProduced.standard_cars || 0
+  document.getElementById('luxuryCars').textContent = stats.totalProduced.luxury_cars || 0
+    
   // リソース更新
   const materialsElement = document.getElementById('materials')
   materialsElement.textContent = stats.materials
@@ -290,6 +303,14 @@ function updateStats() {
   document.getElementById('inventorySeat').textContent = stats.inventory.seat
   document.getElementById('inventoryPreAssembled').textContent = stats.inventory.pre_assembled
   document.getElementById('inventoryAssembled').textContent = stats.inventory.assembled
+    
+  // 高級車部品在庫更新
+  document.getElementById('inventoryLeather').textContent = stats.inventory.leather
+  document.getElementById('inventoryLuxuryEngine').textContent = stats.inventory.luxury_engine
+  document.getElementById('inventoryLuxuryBody').textContent = stats.inventory.luxury_body
+  document.getElementById('inventoryLeatherSeat').textContent = stats.inventory.leather_seat
+  document.getElementById('inventoryPremiumInterior').textContent = stats.inventory.premium_interior
+  document.getElementById('inventoryLuxuryAssembled').textContent = stats.inventory.luxury_assembled
 }
 
 // 描画
