@@ -122,10 +122,13 @@ function moveItems(deltaTime) {
             })
           }
         } else if (targetMachine.type === 'storage_box') {
-          // 格納ボックスは在庫に追加
+          // 格納ボックスは個別在庫に追加
           const storableItems = ['tire', 'engine', 'body', 'seat', 'pre_assembled', 'assembled', 'leather', 'luxury_engine', 'luxury_body', 'leather_seat', 'premium_interior', 'luxury_assembled']
           if (storableItems.includes(item.type)) {
-            stats.inventory[item.type]++
+            if (!targetMachine.storage) {
+              targetMachine.storage = {}
+            }
+            targetMachine.storage[item.type] = (targetMachine.storage[item.type] || 0) + 1
           }
         } else {
           // その他の機械は在庫に追加

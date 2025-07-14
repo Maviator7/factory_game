@@ -226,3 +226,26 @@ body {
     color: #e74c3c;
     font-weight: bold;
 }
+
+/* モーダル関連 */
+#storageModal {
+    font-family: Arial, sans-serif;
+}
+
+#storageModal h3 {
+    text-align: center;
+    color: #3498db;
+}
+
+#storageModal .btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#storageModal .btn:hover {
+    background: #2980b9;
+}

@@ -191,6 +191,7 @@
                     <p><strong>回転:</strong> 機械を右クリック</p>
                     <p><strong>削除:</strong> 削除モード→左クリック</p>
                     <p><strong>レベルアップ:</strong> ⭐モード→左クリック (¥100k)</p>
+                    <p><strong>格納ボックス:</strong> 📦クリックで在庫確認</p>
                     <p><span style="color: #3498db;">🔵</span> <strong>入力ポート</strong> - 材料が入る</p>
                     <p><span style="color: #e74c3c;">🔴→</span> <strong>出力ポート</strong> - 製品が出る</p>
                     <p><strong>自動接続:</strong> ポート同士が隣接すると接続</p>
@@ -232,6 +233,19 @@
                         <span style="color: #f1c40f;">🏆 最終組立:</span> タイヤ×4 + 高級エンジン×1 + 高級ボディ×1 + レザーシート×4 + プレミアム内装×1
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 格納ボックス在庫表示モーダル -->
+    <div id="storageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2c3e50; padding: 20px; border-radius: 10px; border: 2px solid #3498db; min-width: 300px;">
+            <h3 style="margin: 0 0 15px 0; color: #3498db; text-align: center;">📦 格納ボックス在庫</h3>
+            <div id="storageInventory" style="max-height: 400px; overflow-y: auto;">
+                <!-- 在庫内容がここに表示される -->
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn" id="closeStorageModal" style="width: auto; padding: 8px 20px;">閉じる</button>
             </div>
         </div>
     </div>

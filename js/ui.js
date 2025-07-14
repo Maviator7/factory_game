@@ -1,4 +1,30 @@
-// UI処理と描画
+// 格納ボックスの在庫表示
+function drawStorageInventory(machine, x, y) {
+  if (machine.type !== 'storage_box' || !machine.storage) {return}
+    
+  const storage = machine.storage
+  const totalItems = Object.values(storage).reduce((sum, count) => sum + count, 0)
+    
+  if (totalItems > 0) {
+    const bounce = Math.sin(animationTime * 0.005) * 2
+        
+    // 総在庫数表示
+    ctx.fillStyle = '#3498db'
+    ctx.fillRect(x + GRID_SIZE - 12, y + 2 + bounce, 10, 10)
+    ctx.fillStyle = 'white'
+    ctx.font = '8px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText(totalItems, x + GRID_SIZE - 7, y + 9 + bounce)
+        
+    // クリック可能であることを示すカーソルアイコン
+    ctx.fillStyle = 'rgba(52, 152, 219, 0.3)'
+    ctx.fillRect(x + 2, y + GRID_SIZE - 8, GRID_SIZE - 4, 6)
+    ctx.fillStyle = '#3498db'
+    ctx.font = '6px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('クリックで詳細', x + GRID_SIZE/2, y + GRID_SIZE - 4)
+  }
+}// UI処理と描画
 
 // ヘルパー関数：Hexカラーをrgbに変換
 function hexToRgb(hex) {
@@ -87,6 +113,23 @@ function setupEvents() {
   document.getElementById('startBtn').addEventListener('click', toggleProduction)
   document.getElementById('clearBtn').addEventListener('click', clearAll)
   document.getElementById('buyMaterialsBtn').addEventListener('click', buyMaterials)
+    
+  // 格納ボックスモーダル関連
+  document.getElementById('closeStorageModal').addEventListener('click', closeStorageModal)
+    
+  // モーダル背景クリックで閉じる
+  document.getElementById('storageModal').addEventListener('click', (e) => {
+    if (e.target.id === 'storageModal') {
+      closeStorageModal()
+    }
+  })
+    
+  // ESCキーでモーダルを閉じる
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeStorageModal()
+    }
+  })
 }
 
 // キャンバス右クリック処理（回転）
@@ -159,9 +202,17 @@ function handleCanvasClick(e) {
   const gridY = Math.floor(y / GRID_SIZE)
   const key = `${gridX}-${gridY}`
     
+  // まず機械をクリックしたかチェック（格納ボックスの場合）
+  const clickedMachine = machines.get(key)
+  if (clickedMachine && clickedMachine.type === 'storage_box' && mode !== 'delete' && mode !== 'levelup') {
+    // 格納ボックスをクリックした場合、在庫表示
+    showStorageInventory(clickedMachine)
+    return
+  }
+    
   if (mode === 'place') {
     if (selectedMachine && !machines.has(key)) {
-      machines.set(key, {
+      const newMachine = {
         type: selectedMachine,
         x: gridX,
         y: gridY,
@@ -171,7 +222,14 @@ function handleCanvasClick(e) {
         processStart: 0,
         rotation: 0, // 回転状態（0-3: 0°, 90°, 180°, 270°）
         level: 1 // 初期レベル
-      })
+      }
+            
+      // 格納ボックスの場合は個別在庫を初期化
+      if (selectedMachine === 'storage_box') {
+        newMachine.storage = {}
+      }
+            
+      machines.set(key, newMachine)
             
       // 隣接する機械と自動接続
       createAutoConnections(gridX, gridY)
@@ -224,21 +282,6 @@ function clearAll() {
       seat: 0,
       standard_cars: 0,
       luxury_cars: 0
-    },
-    inventory: {
-      tire: 0,
-      engine: 0,
-      body: 0,
-      seat: 0,
-      pre_assembled: 0,
-      assembled: 0,
-      // 高級車パーツ
-      leather: 0,
-      luxury_engine: 0,
-      luxury_body: 0,
-      leather_seat: 0,
-      premium_interior: 0,
-      luxury_assembled: 0
     }
   }
   updateStats()
@@ -295,22 +338,76 @@ function updateStats() {
   const materialsElement = document.getElementById('materials')
   materialsElement.textContent = stats.materials
   materialsElement.className = stats.materials < 10 ? 'stat-value warning' : 'stat-value'
+}
+
+// 格納ボックス在庫表示
+function showStorageInventory(machine) {
+  console.log('格納ボックスクリック:', machine) // デバッグ用
     
-  // 在庫更新
-  document.getElementById('inventoryTire').textContent = stats.inventory.tire
-  document.getElementById('inventoryEngine').textContent = stats.inventory.engine
-  document.getElementById('inventoryBody').textContent = stats.inventory.body
-  document.getElementById('inventorySeat').textContent = stats.inventory.seat
-  document.getElementById('inventoryPreAssembled').textContent = stats.inventory.pre_assembled
-  document.getElementById('inventoryAssembled').textContent = stats.inventory.assembled
+  const modal = document.getElementById('storageModal')
+  const inventoryDiv = document.getElementById('storageInventory')
     
-  // 高級車部品在庫更新
-  document.getElementById('inventoryLeather').textContent = stats.inventory.leather
-  document.getElementById('inventoryLuxuryEngine').textContent = stats.inventory.luxury_engine
-  document.getElementById('inventoryLuxuryBody').textContent = stats.inventory.luxury_body
-  document.getElementById('inventoryLeatherSeat').textContent = stats.inventory.leather_seat
-  document.getElementById('inventoryPremiumInterior').textContent = stats.inventory.premium_interior
-  document.getElementById('inventoryLuxuryAssembled').textContent = stats.inventory.luxury_assembled
+  if (!modal || !inventoryDiv) {
+    console.error('モーダル要素が見つかりません')
+    return
+  }
+    
+  // アイテムの絵文字と名前
+  const itemInfo = {
+    tire: { emoji: '🛞', name: 'タイヤ' },
+    engine: { emoji: '🔧', name: 'エンジン' },
+    body: { emoji: '🚗', name: 'ボディ' },
+    seat: { emoji: '🪑', name: 'シート' },
+    pre_assembled: { emoji: '⚙️', name: '部品組立品' },
+    assembled: { emoji: '🚙', name: '組立済み車' },
+    leather: { emoji: '🐄', name: '革材料' },
+    luxury_engine: { emoji: '💎', name: '高級エンジン' },
+    luxury_body: { emoji: '✨', name: '高級ボディ' },
+    leather_seat: { emoji: '👑', name: 'レザーシート' },
+    premium_interior: { emoji: '🎭', name: 'プレミアム内装' },
+    luxury_assembled: { emoji: '🏆', name: '高級車組立品' }
+  }
+    
+  // 在庫内容を表示
+  let inventoryHTML = ''
+  const storage = machine.storage || {}
+    
+  console.log('格納ボックス在庫:', storage) // デバッグ用
+    
+  // 在庫がある場合
+  const hasItems = Object.keys(storage).length > 0 && Object.values(storage).some(count => count > 0)
+    
+  if (hasItems) {
+    Object.entries(storage).forEach(([itemType, count]) => {
+      const info = itemInfo[itemType]
+      if (info && count > 0) {
+        inventoryHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin: 5px 0; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                        <span style="font-size: 16px;">${info.emoji} ${info.name}</span>
+                        <span style="font-weight: bold; color: #2ecc71; font-size: 18px;">${count}</span>
+                    </div>
+                `
+      }
+    })
+  }
+    
+  if (!inventoryHTML) {
+    inventoryHTML = `
+            <div style="text-align: center; padding: 20px; color: #bdc3c7;">
+                <span style="font-size: 24px;">📦</span><br>
+                <p style="margin: 10px 0;">この格納ボックスは空です</p>
+                <p style="font-size: 12px; color: #7f8c8d;">部品を接続して格納してください</p>
+            </div>
+        `
+  }
+    
+  inventoryDiv.innerHTML = inventoryHTML
+  modal.style.display = 'block'
+}
+
+// 格納ボックスモーダルを閉じる
+function closeStorageModal() {
+  document.getElementById('storageModal').style.display = 'none'
 }
 
 // 描画
@@ -499,6 +596,11 @@ function drawSingleMachine(machine) {
     
   // 在庫表示
   drawInventoryIndicator(machine, x, y, machineType)
+    
+  // 格納ボックスの場合は専用の在庫表示
+  if (machine.type === 'storage_box') {
+    drawStorageInventory(machine, x, y)
+  }
     
   // 入出力ポート表示
   drawPorts(machine, x, y, machineType)

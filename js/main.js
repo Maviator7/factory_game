@@ -22,22 +22,6 @@ let stats = {
     seat: 0,
     standard_cars: 0,
     luxury_cars: 0
-  },
-  // 在庫管理
-  inventory: {
-    tire: 0,
-    engine: 0,
-    body: 0,
-    seat: 0,
-    pre_assembled: 0,
-    assembled: 0,
-    // 高級車パーツ
-    leather: 0,
-    luxury_engine: 0,
-    luxury_body: 0,
-    leather_seat: 0,
-    premium_interior: 0,
-    luxury_assembled: 0
   }
 }
 let lastUpdateTime = 0

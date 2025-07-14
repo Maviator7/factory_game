@@ -188,7 +188,7 @@ const machineTypes = {
     outputs: [],
     inputPorts: [{dx: -1, dy: 0}, {dx: 1, dy: 0}, {dx: 0, dy: -1}, {dx: 0, dy: 1}], // 四方向から入力
     outputPorts: [], // 出力なし（格納専用）
-    recipe: '部品を格納して在庫として保管'
+    recipe: '部品を格納して個別管理（クリックで在庫確認）'
   },
   parts_assembler: {
     name: '部品組立',
