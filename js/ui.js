@@ -111,7 +111,18 @@ function setupEvents() {
     
   // レシピボタン
   document.getElementById('recipeBtn').addEventListener('click', () => {
-    document.getElementById('recipeModal').style.display = 'block'
+    const panel = document.getElementById('recipePanel')
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
+    // ヘルプパネルは閉じる
+    document.getElementById('helpPanel').style.display = 'none'
+  })
+    
+  // ヘルプボタン
+  document.getElementById('helpBtn').addEventListener('click', () => {
+    const panel = document.getElementById('helpPanel')
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
+    // レシピパネルは閉じる
+    document.getElementById('recipePanel').style.display = 'none'
   })
     
   // 制御ボタン
@@ -121,7 +132,12 @@ function setupEvents() {
     
   // 格納ボックスモーダル関連
   document.getElementById('closeStorageModal').addEventListener('click', closeStorageModal)
-  document.getElementById('closeRecipeModal').addEventListener('click', closeRecipeModal)
+  document.getElementById('closeRecipePanel').addEventListener('click', () => {
+    document.getElementById('recipePanel').style.display = 'none'
+  })
+  document.getElementById('closeHelpPanel').addEventListener('click', () => {
+    document.getElementById('helpPanel').style.display = 'none'
+  })
     
   // モーダル背景クリックで閉じる
   document.getElementById('storageModal').addEventListener('click', (e) => {
@@ -130,17 +146,12 @@ function setupEvents() {
     }
   })
     
-  document.getElementById('recipeModal').addEventListener('click', (e) => {
-    if (e.target.id === 'recipeModal') {
-      closeRecipeModal()
-    }
-  })
-    
-  // ESCキーでモーダルを閉じる
+  // ESCキーでパネルを閉じる
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeStorageModal()
-      closeRecipeModal()
+      document.getElementById('recipePanel').style.display = 'none'
+      document.getElementById('helpPanel').style.display = 'none'
     }
   })
 }
@@ -426,6 +437,11 @@ function closeStorageModal() {
 // レシピモーダルを閉じる
 function closeRecipeModal() {
   document.getElementById('recipeModal').style.display = 'none'
+}
+
+// ヘルプモーダルを閉じる
+function closeHelpModal() {
+  document.getElementById('helpModal').style.display = 'none'
 }
 
 // 描画

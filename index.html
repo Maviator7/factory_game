@@ -194,21 +194,6 @@
                 <h3>🗑️ 削除</h3>
                 <button class="btn" id="deleteBtn">🗑️ 削除モード</button>
             </div>
-            
-            <div class="section">
-                <h3>ℹ️ 機械操作</h3>
-                <div style="font-size: 11px; line-height: 1.3;">
-                    <p><strong>配置:</strong> 機械選択→左クリック</p>
-                    <p><strong>回転:</strong> 機械を右クリック</p>
-                    <p><strong>削除:</strong> 削除モード→左クリック</p>
-                    <p><strong>レベルアップ:</strong> ⭐モード→左クリック (¥100k)</p>
-                    <p><strong>格納ボックス:</strong> 📦クリックで在庫確認</p>
-                    <p><span style="color: #3498db;">🔵</span> <strong>入力ポート</strong> - 材料が入る</p>
-                    <p><span style="color: #e74c3c;">🔴→</span> <strong>出力ポート</strong> - 製品が出る</p>
-                    <p><strong>自動接続:</strong> ポート同士が隣接すると接続</p>
-                    <p><strong>Lv.2効果:</strong> 処理速度が50%向上</p>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -225,44 +210,90 @@
         </div>
     </div>
 
-    <!-- レシピ表示モーダル -->
-    <div id="recipeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2c3e50; padding: 20px; border-radius: 10px; border: 2px solid #3498db; min-width: 400px; max-width: 80vw; max-height: 80vh; overflow-y: auto;">
-            <h3 style="margin: 0 0 15px 0; color: #3498db; text-align: center;">📋 部品レシピ</h3>
-            <div style="font-size: 12px; line-height: 1.4;">
-                <div style="margin-bottom: 12px;">
-                    <strong>🛞 タイヤ:</strong><br>
-                    原材料 → タイヤプレス → 溶接 → タイヤ製造
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>🔧 エンジン:</strong><br>
-                    原材料 → エンジンプレス → 溶接 → エンジン製造
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>🚗 ボディ:</strong><br>
-                    原材料 → ボディプレス → 溶接 → ボディ製造
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>🪑 シート:</strong><br>
-                    原材料 → プレス → 溶接 → 塗装 → シート製造
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>🚙 標準車:</strong><br>
-                    タイヤ×4 + エンジン×1 + ボディ×1 + シート×4<br>
-                    → 部品組立 → 最終組立 → 検査 <span style="color: #2ecc71;">(¥250k)</span>
-                </div>
-                <div style="margin-bottom: 12px; border-top: 1px solid #555; padding-top: 12px;">
-                    <strong style="color: #f1c40f;">🏆 高級車 (¥800k):</strong><br><br>
-                    <span style="color: #f1c40f;">💎 高級エンジン:</span> (原材料 → プレス → 溶接)×2 → 高級エンジン製造<br><br>
-                    <span style="color: #f1c40f;">✨ 高級ボディ:</span> (原材料 → プレス → 溶接)×2 → 高級ボディ製造<br><br>
-                    <span style="color: #f1c40f;">🐄 革材料:</span> 原材料 → 革加工機<br><br>
-                    <span style="color: #f1c40f;">👑 レザーシート:</span> 革×1 + (原材料 → プレス → 溶接 → 塗装)×1 → レザーシート製造<br><br>
-                    <span style="color: #f1c40f;">🎭 プレミアム内装:</span> 革×2 + (原材料 → プレス → 溶接 → 塗装)×1 → プレミアム内装製造<br><br>
-                    <span style="color: #f1c40f;">🏆 最終組立:</span> タイヤ×4 + 高級エンジン×1 + 高級ボディ×1 + レザーシート×4 + プレミアム内装×1
-                </div>
+    <!-- レシピ表示パネル -->
+    <div id="recipePanel" style="display: none; position: fixed; top: 70px; right: 10px; width: 350px; background: rgba(44, 62, 80, 0.95); border: 2px solid #3498db; border-radius: 10px; padding: 15px; z-index: 500; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; color: #3498db;">📋 部品レシピ</h3>
+            <button id="closeRecipePanel" style="background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px;">✕</button>
+        </div>
+        <div style="font-size: 11px; line-height: 1.3; max-height: 400px; overflow-y: auto;">
+            <div style="margin-bottom: 8px;">
+                <strong>🛞 タイヤ:</strong><br>
+                原材料 → タイヤプレス → 溶接 → タイヤ製造
             </div>
-            <div style="text-align: center; margin-top: 15px;">
-                <button class="btn" id="closeRecipeModal" style="width: auto; padding: 8px 20px;">閉じる</button>
+            <div style="margin-bottom: 8px;">
+                <strong>🔧 エンジン:</strong><br>
+                原材料 → エンジンプレス → 溶接 → エンジン製造
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>🚗 ボディ:</strong><br>
+                原材料 → ボディプレス → 溶接 → ボディ製造
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>🪑 シート:</strong><br>
+                原材料 → プレス → 溶接 → 塗装 → シート製造
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>🚙 標準車:</strong><br>
+                タイヤ×4 + エンジン×1 + ボディ×1 + シート×4<br>
+                → 部品組立 → 最終組立 → 検査 <span style="color: #2ecc71;">(¥250k)</span>
+            </div>
+            <div style="margin-bottom: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                <strong style="color: #f1c40f;">🏆 高級車 (¥800k):</strong><br><br>
+                <span style="color: #f1c40f;">💎 高級エンジン:</span> (原材料 → プレス → 溶接)×2 → 高級エンジン製造<br><br>
+                <span style="color: #f1c40f;">✨ 高級ボディ:</span> (原材料 → プレス → 溶接)×2 → 高級ボディ製造<br><br>
+                <span style="color: #f1c40f;">🐄 革材料:</span> 原材料 → 革加工機<br><br>
+                <span style="color: #f1c40f;">👑 レザーシート:</span> 革×1 + (原材料 → プレス → 溶接 → 塗装)×1 → レザーシート製造<br><br>
+                <span style="color: #f1c40f;">🎭 プレミアム内装:</span> 革×2 + (原材料 → プレス → 溶接 → 塗装)×1 → プレミアム内装製造<br><br>
+                <span style="color: #f1c40f;">🏆 最終組立:</span> タイヤ×4 + 高級エンジン×1 + 高級ボディ×1 + レザーシート×4 + プレミアム内装×1
+            </div>
+        </div>
+    </div>
+
+    <!-- ヘルプ表示パネル -->
+    <div id="helpPanel" style="display: none; position: fixed; top: 70px; left: 10px; width: 320px; background: rgba(44, 62, 80, 0.95); border: 2px solid #3498db; border-radius: 10px; padding: 15px; z-index: 500; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; color: #3498db;">ℹ️ 操作ヘルプ</h3>
+            <button id="closeHelpPanel" style="background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px;">✕</button>
+        </div>
+        <div style="font-size: 12px; line-height: 1.4; max-height: 400px; overflow-y: auto;">
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #2ecc71;">🎮 基本操作</strong>
+                <ul style="margin: 5px 0; padding-left: 15px; font-size: 11px;">
+                    <li><strong>配置:</strong> 機械選択 → 左クリック</li>
+                    <li><strong>回転:</strong> 機械を右クリック</li>
+                    <li><strong>削除:</strong> 削除モード → 左クリック</li>
+                    <li><strong>レベルアップ:</strong> ⭐モード → 左クリック (¥100k)</li>
+                    <li><strong>格納ボックス:</strong> 📦クリックで在庫確認</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #e74c3c;">🔌 ポートシステム</strong>
+                <ul style="margin: 5px 0; padding-left: 15px; font-size: 11px;">
+                    <li><span style="color: #3498db;">🔵</span> <strong>入力ポート</strong> - 材料が入る</li>
+                    <li><span style="color: #e74c3c;">🔴→</span> <strong>出力ポート</strong> - 製品が出る</li>
+                    <li><strong>自動接続:</strong> ポート同士が隣接で接続</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #f1c40f;">⭐ レベルアップ</strong>
+                <ul style="margin: 5px 0; padding-left: 15px; font-size: 11px;">
+                    <li><strong>コスト:</strong> ¥100,000</li>
+                    <li><strong>効果:</strong> 処理速度50%向上</li>
+                    <li><strong>視覚:</strong> 金色縁取り + レベル表示</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #1abc9c;">🏭 効率化のコツ</strong>
+                <ul style="margin: 5px 0; padding-left: 15px; font-size: 11px;">
+                    <li><strong>並列生産:</strong> 同部品を複数ライン</li>
+                    <li><strong>ボトルネック解消:</strong> 遅い機械優先UP</li>
+                    <li><strong>格納ボックス:</strong> 在庫バッファ活用</li>
+                    <li><strong>レイアウト:</strong> 短距離接続で効率化</li>
+                </ul>
             </div>
         </div>
     </div>
