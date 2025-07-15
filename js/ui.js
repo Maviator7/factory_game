@@ -42,7 +42,7 @@ function resizeCanvas() {
   const sidebar = document.getElementById('sidebar')
     
   const availableWidth = window.innerWidth - sidebar.offsetWidth
-  const availableHeight = window.innerHeight
+  const availableHeight = container.offsetHeight // ヘッダー分を引いた高さ
     
   // アスペクト比を保持しつつ、利用可能なスペースに合わせる
   const targetRatio = 4/3 // 800:600の比率
@@ -109,6 +109,11 @@ function setupEvents() {
     document.getElementById('levelupBtn').classList.add('active')
   })
     
+  // レシピボタン
+  document.getElementById('recipeBtn').addEventListener('click', () => {
+    document.getElementById('recipeModal').style.display = 'block'
+  })
+    
   // 制御ボタン
   document.getElementById('startBtn').addEventListener('click', toggleProduction)
   document.getElementById('clearBtn').addEventListener('click', clearAll)
@@ -116,6 +121,7 @@ function setupEvents() {
     
   // 格納ボックスモーダル関連
   document.getElementById('closeStorageModal').addEventListener('click', closeStorageModal)
+  document.getElementById('closeRecipeModal').addEventListener('click', closeRecipeModal)
     
   // モーダル背景クリックで閉じる
   document.getElementById('storageModal').addEventListener('click', (e) => {
@@ -124,10 +130,17 @@ function setupEvents() {
     }
   })
     
+  document.getElementById('recipeModal').addEventListener('click', (e) => {
+    if (e.target.id === 'recipeModal') {
+      closeRecipeModal()
+    }
+  })
+    
   // ESCキーでモーダルを閉じる
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeStorageModal()
+      closeRecipeModal()
     }
   })
 }
@@ -408,6 +421,11 @@ function showStorageInventory(machine) {
 // 格納ボックスモーダルを閉じる
 function closeStorageModal() {
   document.getElementById('storageModal').style.display = 'none'
+}
+
+// レシピモーダルを閉じる
+function closeRecipeModal() {
+  document.getElementById('recipeModal').style.display = 'none'
 }
 
 // 描画
