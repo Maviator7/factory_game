@@ -12,6 +12,8 @@
         <div class="header-content">
             <h1 class="header-title">🚗 自動車工場シミュレーション</h1>
             <div class="header-buttons">
+                <button class="header-btn" id="saveBtn">💾 セーブ</button>
+                <button class="header-btn" id="loadBtn">📁 ロード</button>
                 <button class="header-btn" id="recipeBtn">📋 レシピ</button>
                 <button class="header-btn" id="helpBtn">❓ ヘルプ</button>
             </div>
@@ -294,6 +296,30 @@
                     <li><strong>格納ボックス:</strong> 在庫バッファ活用</li>
                     <li><strong>レイアウト:</strong> 短距離接続で効率化</li>
                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- セーブ/ロード パネル -->
+    <div id="saveLoadPanel" style="display: none; position: fixed; top: 70px; left: 50%; transform: translateX(-50%); width: 500px; background: rgba(44, 62, 80, 0.95); border: 2px solid #3498db; border-radius: 10px; padding: 20px; z-index: 500; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: #3498db;">💾 セーブ/ロード</h3>
+            <button id="closeSaveLoadPanel" style="background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px;">✕</button>
+        </div>
+        
+        <!-- セーブスロット -->
+        <div style="margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: #2ecc71;">📂 セーブスロット</h4>
+            <div id="saveSlots" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <!-- セーブスロットがここに生成される -->
+            </div>
+        </div>
+        
+        <!-- 自動セーブ情報 -->
+        <div style="border-top: 1px solid #555; padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #f1c40f; font-size: 12px;">🔄 自動セーブ: <span id="autoSaveStatus">有効</span></span>
+                <span style="color: #bdc3c7; font-size: 11px;">最終保存: <span id="lastSaveTime">未保存</span></span>
             </div>
         </div>
     </div>

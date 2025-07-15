@@ -109,6 +109,16 @@ function setupEvents() {
     document.getElementById('levelupBtn').classList.add('active')
   })
     
+  // セーブボタン
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    toggleSaveLoadPanel()
+  })
+    
+  // ロードボタン
+  document.getElementById('loadBtn').addEventListener('click', () => {
+    toggleSaveLoadPanel()
+  })
+    
   // レシピボタン
   document.getElementById('recipeBtn').addEventListener('click', () => {
     const panel = document.getElementById('recipePanel')
@@ -138,6 +148,9 @@ function setupEvents() {
   document.getElementById('closeHelpPanel').addEventListener('click', () => {
     document.getElementById('helpPanel').style.display = 'none'
   })
+  document.getElementById('closeSaveLoadPanel').addEventListener('click', () => {
+    document.getElementById('saveLoadPanel').style.display = 'none'
+  })
     
   // モーダル背景クリックで閉じる
   document.getElementById('storageModal').addEventListener('click', (e) => {
@@ -152,6 +165,7 @@ function setupEvents() {
       closeStorageModal()
       document.getElementById('recipePanel').style.display = 'none'
       document.getElementById('helpPanel').style.display = 'none'
+      document.getElementById('saveLoadPanel').style.display = 'none'
     }
   })
 }
@@ -432,6 +446,269 @@ function showStorageInventory(machine) {
 // 格納ボックスモーダルを閉じる
 function closeStorageModal() {
   document.getElementById('storageModal').style.display = 'none'
+}
+
+// セーブ/ロードパネルの表示切り替え
+function toggleSaveLoadPanel() {
+  const panel = document.getElementById('saveLoadPanel')
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block'
+    updateSaveSlots()
+    updateLastSaveTime()
+    // 他のパネルは閉じる
+    document.getElementById('recipePanel').style.display = 'none'
+    document.getElementById('helpPanel').style.display = 'none'
+  } else {
+    panel.style.display = 'none'
+  }
+}
+
+// セーブスロットの更新
+function updateSaveSlots() {
+  const slotsContainer = document.getElementById('saveSlots')
+  slotsContainer.innerHTML = ''
+    
+  for (let i = 1; i <= 4; i++) {
+    const saveKey = `factoryGame_slot${i}`
+    const saveData = localStorage.getItem(saveKey)
+        
+    const slotDiv = document.createElement('div')
+    slotDiv.style.cssText = `
+            padding: 10px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        `
+        
+    if (saveData) {
+      try {
+        const data = JSON.parse(saveData)
+        slotDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #2ecc71;">スロット ${i} 📁</div>
+                    <div style="font-size: 11px; color: #bdc3c7;">
+                        車: ${data.stats.cars}台 | 売上: ¥${data.stats.revenue.toLocaleString()}<br>
+                        ${new Date(data.timestamp).toLocaleString()}
+                    </div>
+                `
+        slotDiv.addEventListener('mouseenter', () => {
+          slotDiv.style.borderColor = '#2ecc71'
+          slotDiv.style.background = 'rgba(46, 204, 113, 0.1)'
+        })
+      } catch (e) {
+        slotDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #e74c3c;">スロット ${i} ❌</div>
+                    <div style="font-size: 11px; color: #bdc3c7;">破損データ</div>
+                `
+      }
+    } else {
+      slotDiv.innerHTML = `
+                <div style="font-weight: bold; color: #7f8c8d;">スロット ${i} 📂</div>
+                <div style="font-size: 11px; color: #bdc3c7;">空きスロット</div>
+            `
+      slotDiv.addEventListener('mouseenter', () => {
+        slotDiv.style.borderColor = '#3498db'
+        slotDiv.style.background = 'rgba(52, 152, 219, 0.1)'
+      })
+    }
+        
+    slotDiv.addEventListener('mouseleave', () => {
+      slotDiv.style.borderColor = '#555'
+      slotDiv.style.background = 'rgba(255,255,255,0.05)'
+    })
+        
+    // クリックイベント
+    slotDiv.addEventListener('click', () => {
+      if (saveData) {
+        // ロード確認
+        if (confirm(`スロット ${i} をロードしますか？\n現在の進行状況は失われます。`)) {
+          loadGame(i)
+        }
+      } else {
+        // セーブ確認
+        if (confirm(`スロット ${i} にセーブしますか？`)) {
+          saveGame(i)
+        }
+      }
+    })
+        
+    slotsContainer.appendChild(slotDiv)
+  }
+}
+
+// ゲームセーブ
+function saveGame(slot) {
+  try {
+    const saveData = {
+      version: '1.0',
+      timestamp: Date.now(),
+      machines: Array.from(machines.entries()).map(([key, machine]) => {
+        // 一時的なプロパティを除外
+        const cleanMachine = { ...machine }
+        delete cleanMachine.levelUpEffect
+        return [key, cleanMachine]
+      }),
+      connections: Array.from(connections.entries()),
+      stats: { ...stats },
+      isRunning: isRunning,
+      selectedMachine: selectedMachine,
+      mode: mode
+    }
+        
+    localStorage.setItem(`factoryGame_slot${slot}`, JSON.stringify(saveData))
+    localStorage.setItem('factoryGame_lastSave', Date.now().toString())
+        
+    updateSaveSlots()
+    updateLastSaveTime()
+        
+    // 成功メッセージ
+    showMessage(`✅ スロット ${slot} にセーブしました！`, '#2ecc71')
+        
+  } catch (error) {
+    console.error('セーブエラー:', error)
+    showMessage('❌ セーブに失敗しました', '#e74c3c')
+  }
+}
+
+// ゲームロード
+function loadGame(slot) {
+  try {
+    const saveData = localStorage.getItem(`factoryGame_slot${slot}`)
+    if (!saveData) {
+      showMessage('❌ セーブデータが見つかりません', '#e74c3c')
+      return
+    }
+        
+    const data = JSON.parse(saveData)
+        
+    // データ復元
+    machines.clear()
+    connections.clear()
+    items = []
+        
+    // 機械復元
+    data.machines.forEach(([key, machine]) => {
+      machines.set(key, machine)
+    })
+        
+    // 接続復元
+    data.connections.forEach(([key, targets]) => {
+      connections.set(key, targets)
+    })
+        
+    // 統計復元
+    stats = { ...data.stats }
+        
+    // ゲーム状態復元
+    isRunning = data.isRunning || false
+    selectedMachine = data.selectedMachine || null
+    mode = data.mode || 'place'
+        
+    // UI更新
+    updateStats()
+    draw()
+        
+    // 生産状態復元
+    if (isRunning) {
+      const btn = document.getElementById('startBtn')
+      btn.textContent = '⏹️ 生産停止'
+      btn.style.background = '#e74c3c'
+      lastUpdateTime = Date.now()
+      gameLoop()
+    }
+        
+    // パネルを閉じる
+    document.getElementById('saveLoadPanel').style.display = 'none'
+        
+    showMessage(`✅ スロット ${slot} からロードしました！`, '#2ecc71')
+        
+  } catch (error) {
+    console.error('ロードエラー:', error)
+    showMessage('❌ ロードに失敗しました', '#e74c3c')
+  }
+}
+
+// 最終セーブ時刻の更新
+function updateLastSaveTime() {
+  const lastSave = localStorage.getItem('factoryGame_lastSave')
+  const timeElement = document.getElementById('lastSaveTime')
+    
+  if (lastSave) {
+    const date = new Date(parseInt(lastSave))
+    timeElement.textContent = date.toLocaleString()
+  } else {
+    timeElement.textContent = '未保存'
+  }
+}
+
+// メッセージ表示
+function showMessage(text, color = '#3498db') {
+  // 既存のメッセージを削除
+  const existingMessage = document.getElementById('gameMessage')
+  if (existingMessage) {
+    existingMessage.remove()
+  }
+    
+  const messageDiv = document.createElement('div')
+  messageDiv.id = 'gameMessage'
+  messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${color};
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        z-index: 1000;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        animation: messageSlide 0.3s ease-out;
+    `
+    
+  // アニメーション CSS を追加
+  if (!document.getElementById('messageStyles')) {
+    const style = document.createElement('style')
+    style.id = 'messageStyles'
+    style.textContent = `
+            @keyframes messageSlide {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `
+    document.head.appendChild(style)
+  }
+    
+  messageDiv.textContent = text
+  document.body.appendChild(messageDiv)
+    
+  // 3秒後に自動削除
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.style.animation = 'messageSlide 0.3s ease-out reverse'
+      setTimeout(() => messageDiv.remove(), 300)
+    }
+  }, 3000)
+}
+
+// 自動セーブ機能
+let autoSaveInterval
+
+function startAutoSave() {
+  // 5分ごとに自動セーブ
+  autoSaveInterval = setInterval(() => {
+    if (machines.size > 0) { // 機械が配置されている場合のみ
+      saveGame('auto')
+      console.log('自動セーブ実行')
+    }
+  }, 5 * 60 * 1000) // 5分
+}
+
+function stopAutoSave() {
+  if (autoSaveInterval) {
+    clearInterval(autoSaveInterval)
+  }
 }
 
 // レシピモーダルを閉じる

@@ -43,11 +43,33 @@ function init() {
   // イベント設定
   setupEvents()
     
+  // 自動セーブ開始
+  startAutoSave()
+    
   // 初期描画
   draw()
     
   console.log('ゲームが初期化されました')
 }
+
+// ページを離れる前の確認（プレイ中のみ）
+window.addEventListener('beforeunload', (event) => {
+  // 自動セーブ停止
+  stopAutoSave()
+    
+  if (isRunning && (machines.size > 0 || stats.cars > 0)) {
+    // 最後に自動セーブ実行
+    try {
+      saveGame('auto')
+    } catch (e) {
+      console.error('終了時自動セーブエラー:', e)
+    }
+        
+    event.preventDefault()
+    event.returnValue = 'ゲームが進行中です。本当にページを離れますか？'
+    return event.returnValue
+  }
+})
 
 // ゲームループ
 function gameLoop() {
@@ -173,6 +195,34 @@ if (typeof window !== 'undefined') {
       toggleProduction()
       console.log(`生産を${isRunning ? '開始' : '停止'}しました`)
     },
-    getFPS: () => fps
+    getFPS: () => fps,
+    // セーブ/ロード関連
+    saveGame: (slot = 1) => {
+      saveGame(slot)
+      console.log(`スロット${slot}にセーブしました`)
+    },
+    loadGame: (slot = 1) => {
+      loadGame(slot)
+      console.log(`スロット${slot}からロードしました`)
+    },
+    exportSave: (slot = 1) => {
+      const data = localStorage.getItem(`factoryGame_slot${slot}`)
+      if (data) {
+        console.log('セーブデータ(コピーしてバックアップ保存可能):')
+        console.log(data)
+        return data
+      } else {
+        console.log('セーブデータが見つかりません')
+      }
+    },
+    importSave: (saveString, slot = 1) => {
+      try {
+        JSON.parse(saveString) // 検証
+        localStorage.setItem(`factoryGame_slot${slot}`, saveString)
+        console.log(`スロット${slot}にインポートしました`)
+      } catch (e) {
+        console.error('無効なセーブデータです')
+      }
+    }
   }
 }
