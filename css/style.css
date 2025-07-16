@@ -39,20 +39,23 @@ body {
 
 .header-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .header-btn {
-    padding: 8px 16px;
+    padding: 8px 12px;
     background: #3498db;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    white-space: nowrap;
 }
 
 .header-btn:hover {
@@ -62,6 +65,26 @@ body {
 
 .header-btn:active {
     transform: translateY(0);
+}
+
+/* 生産開始/停止ボタンの特別スタイル */
+.header-btn#startBtn {
+    background: #27ae60;
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+.header-btn#startBtn:hover {
+    background: #229954;
+}
+
+/* 全クリアボタンの特別スタイル */
+.header-btn#clearBtn {
+    background: #e74c3c;
+}
+
+.header-btn#clearBtn:hover {
+    background: #c0392b;
 }
 
 /* レイアウト */
@@ -104,9 +127,18 @@ body {
         font-size: 16px;
     }
     
+    .header-buttons {
+        gap: 5px;
+    }
+    
     .header-btn {
-        padding: 6px 12px;
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+    
+    .header-btn#startBtn {
         font-size: 12px;
+        padding: 5px 10px;
     }
     
     #container {
@@ -149,12 +181,21 @@ body {
     }
     
     .header-title {
-        font-size: 14px;
+        font-size: 12px;
+    }
+    
+    .header-buttons {
+        gap: 3px;
     }
     
     .header-btn {
-        padding: 5px 10px;
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+    
+    .header-btn#startBtn {
         font-size: 11px;
+        padding: 4px 8px;
     }
     
     #container {
